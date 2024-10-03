@@ -39,11 +39,17 @@ export async function createInvoice(formData: FormData) {
   // new date
   const date = new Date().toISOString().split("T")[0];
 
-  // insert to db
-  await sql`
-    INSERT INTO invoices (customer_id, amount, status, date)
-    VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-  `;
+  try {
+    // insert to db
+    await sql`
+      INSERT INTO invoices (customer_id, amount, status, date)
+      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+    `;
+  } catch (error) {
+    return {
+      message: "Database Error: Failed to Create Invoice.",
+    };
+  }
 
   // revalidate
   revalidatePath(parentURL);
@@ -62,11 +68,18 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   const amountInCents = toCents(amount);
 
-  await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id} 
-  `;
+  try {
+    // update record
+    await sql`
+      UPDATE invoices
+      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+      WHERE id = ${id} 
+    `;
+  } catch (error) {
+    return {
+      message: "Database Error: Failed to Update Invoice.",
+    };
+  }
 
   // revalidate
   revalidatePath(parentURL);
@@ -77,12 +90,24 @@ export async function updateInvoice(id: string, formData: FormData) {
 
 // delete
 export async function deleteInvoice(id: string) {
-  await sql`
-    DELETE FROM invoices WHERE id = ${id}
-  `;
+  // showing error.tsx
+  // throw new Error('Failed to Delete Invoice');
 
-  // revalidate
-  revalidatePath(parentURL);
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    
+    // revalidate
+    revalidatePath(parentURL);
+
+    return {
+      message: "Invoice Deleted."
+    }
+  } catch (error) {
+    return {
+      message: "Database Error: Failed to Delete Invoice.",
+    };
+  }
+
 }
 
 // helper functions
