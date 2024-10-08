@@ -22,9 +22,9 @@ export default function EditInvoiceForm({
   const initialState: State = { message: null, errors: {} };
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
   const [state, formAction] = useActionState(updateInvoiceWithId, initialState);
-  
+
   return (
-    <form action={formAction} aria-describedby="form-error">
+    <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -150,7 +150,7 @@ export default function EditInvoiceForm({
         </fieldset>
 
         {/* error message */}
-        <div id="form-error" aria-live="polite" aria-atomic="true">
+        <div aria-live="polite" aria-atomic="true">
           <p className="mt-2 text-sm text-red-500" key={state.message}>
             {state.message}
           </p>
